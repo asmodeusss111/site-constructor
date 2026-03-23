@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data:;">
+<title>DevAI Studio — Вход</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg0:#0d0d0d;--bg1:#141414;--bg2:#1a1a1a;--bg3:#222;--bg4:#2a2a2a;
+  --border:#2e2e2e;--border2:#3a3a3a;
+  --green:#3ddc84;--green2:#2ab56d;--green3:#1a7a4a;
+  --gdim:rgba(61,220,132,0.07);--gdim2:rgba(61,220,132,0.13);
+  --text:#e8e8e8;--text2:#999;--text3:#555;
+  --red:#e06c75;--yellow:#e5c07b;--blue:#61afef;
+  --font-code:'JetBrains Mono',monospace;--font-ui:'Inter',sans-serif;
+}
+html,body{height:100%;background:var(--bg0);color:var(--text);font-family:var(--font-ui);overflow:hidden}
+
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.25;pointer-events:none}
+.bg-glow{position:fixed;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(61,220,132,0.055) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
+
+/* NAVBAR */
+.navbar{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(13,13,13,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;z-index:100;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:8px;font-family:var(--font-code);font-size:14px;font-weight:600;color:var(--green);text-decoration:none;cursor:pointer}
+.nav-logo-icon{width:28px;height:28px;background:var(--green3);border:1px solid var(--green2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--green);font-weight:700}
+.nav-right{display:flex;align-items:center;gap:20px;font-size:13px;color:var(--text2)}
+.nav-link{cursor:pointer;transition:.15s}
+.nav-link:hover{color:var(--text)}
+
+/* PAGE */
+.page{height:100vh;display:flex;align-items:center;justify-content:center;padding:52px 20px 20px;position:relative}
+
+/* CARD */
+.card{width:100%;max-width:420px;background:var(--bg1);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative;z-index:10;transition:all .3s}
+.card-top{height:2px;background:linear-gradient(90deg,transparent,var(--green2),var(--green),var(--green2),transparent)}
+.card-inner{padding:32px 32px 28px}
+
+/* HEADER */
+.card-header{text-align:center;margin-bottom:26px}
+.card-icon{width:50px;height:50px;background:var(--gdim2);border:1px solid var(--green3);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px}
+.card-title{font-size:20px;font-weight:600;font-family:var(--font-code);margin-bottom:6px}
+.card-sub{font-size:13px;color:var(--text2);line-height:1.5}
+
+/* TABS */
+.auth-tabs{display:flex;background:var(--bg2);border-radius:8px;padding:3px;gap:3px;margin-bottom:22px}
+.auth-tab{flex:1;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;font-family:var(--font-code);color:var(--text3);cursor:pointer;transition:.2s;border:none;background:transparent}
+.auth-tab.active{background:var(--bg4);color:var(--green)}
+.auth-tab:hover:not(.active){color:var(--text2)}
+
+/* OAUTH */
+.oauth-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.oauth-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 0;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;font-size:13px;color:var(--text2);cursor:pointer;transition:.15s;font-family:var(--font-ui)}
+.oauth-btn:hover{color:var(--text);background:var(--bg3);border-color:var(--border2)}
+
+/* DIVIDER */
+.divider{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.div-line{flex:1;height:1px;background:var(--border)}
+.div-txt{font-size:11px;color:var(--text3);font-family:var(--font-code)}
+
+/* FORM */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-group{margin-bottom:14px}
+.flabel{display:block;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:6px;font-family:var(--font-code)}
+.fwrap{position:relative}
+.finput{width:100%;height:38px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;color:var(--text);font-size:13px;padding:0 36px 0 12px;font-family:var(--font-ui);outline:none;transition:.15s}
+.finput::placeholder{color:var(--text3)}
+.finput:focus{border-color:var(--green3);box-shadow:0 0 0 3px rgba(61,220,132,.06)}
+.finput.ok{border-color:var(--green3)}
+.finput.err{border-color:var(--red)}
+.ficon{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text3);pointer-events:none}
+.ficon.ok{color:var(--green)}
+
+/* PASSWORD STRENGTH */
+.pw-bars{display:flex;gap:4px;margin-top:5px}
+.pw-bar{flex:1;height:3px;border-radius:2px;background:var(--border2);transition:background .3s}
+.pw-bar.w{background:var(--red)}.pw-bar.m{background:var(--yellow)}.pw-bar.s{background:var(--green)}
+.pw-hint{font-size:11px;color:var(--text3);margin-top:4px;font-family:var(--font-code)}
+.pw-hint.s{color:var(--green)}
+
+/* CHECKBOX */
+.cb-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px}
+.cb{width:17px;height:17px;background:var(--bg2);border:1px solid var(--border2);border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;font-size:11px;color:transparent}
+.cb.checked{background:var(--green3);border-color:var(--green2);color:var(--green)}
+.cb-label{font-size:12px;color:var(--text2);line-height:1.5}
+.cb-label a{color:var(--green);text-decoration:none}
+.cb-label a:hover{text-decoration:underline}
+
+/* SUBMIT */
+.btn-submit{width:100%;height:42px;background:var(--green3);border:1px solid var(--green2);border-radius:8px;color:var(--green);font-size:13px;font-weight:600;font-family:var(--font-code);cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:18px}
+.btn-submit:hover{background:var(--green2);color:#0a1a10;transform:translateY(-1px)}
+.btn-submit:active{transform:translateY(0)}
+.btn-submit:disabled{opacity:.5;pointer-events:none}
+
+/* BOTTOM LINK */
+.auth-link{text-align:center;font-size:12px;color:var(--text3);border-top:1px solid var(--border);padding-top:16px}
+.auth-link a{color:var(--green);text-decoration:none;font-family:var(--font-code);font-size:12px;cursor:pointer}
+.auth-link a:hover{text-decoration:underline}
+
+/* ERROR MSG */
+.err-msg{background:rgba(224,108,117,.1);border:1px solid rgba(224,108,117,.3);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--red);margin-bottom:14px;display:none}
+.err-msg.show{display:block}
+.ok-msg{background:var(--gdim);border:1px solid var(--green3);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--green);margin-bottom:14px;display:none}
+.ok-msg.show{display:block}
+
+/* ASIDE */
+.aside{margin-left:52px;max-width:260px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:10}
+.aside-title{font-family:var(--font-code);font-size:12px;color:var(--green);letter-spacing:.5px;margin-bottom:4px}
+.feat{display:flex;gap:12px;align-items:flex-start}
+.feat-icon{width:34px;height:34px;background:var(--gdim);border:1px solid var(--green3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.feat-title{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px}
+.feat-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.term-snip{margin-top:8px;background:var(--bg0);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.term-snip-hdr{height:28px;background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 10px;gap:5px}
+.sdot{width:8px;height:8px;border-radius:50%}
+.snip-name{margin-left:4px;font-size:10px;color:var(--text3);font-family:var(--font-code)}
+.term-snip-body{padding:10px 14px;font-family:var(--font-code);font-size:11px;line-height:1.8;color:var(--text2)}
+.tc{color:var(--green)}.tb{color:var(--blue)}
+
+@media(max-width:780px){.aside{display:none}}
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<nav class="navbar">
+  <div class="nav-logo" onclick="window.location.href='index.html'">
+    <div class="nav-logo-icon">D</div>
+    DevAI Studio
+  </div>
+  <div class="nav-right">
+    <span class="nav-link">Docs</span>
+    <span class="nav-link">Pricing</span>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- CARD -->
+  <div class="card" id="authCard">
+    <div class="card-top"></div>
+    <div class="card-inner">
+
+      <div class="card-header">
+        <div class="card-icon">⚡</div>
+        <div class="card-title" id="cardTitle">Create account</div>
+        <div class="card-sub" id="cardSub">Начни создавать сайты с AI за 30 секунд</div>
+      </div>
+
+      <!-- TABS -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tabReg" onclick="switchTab('register')">Регистрация</button>
+        <button class="auth-tab" id="tabLogin" onclick="switchTab('login')">Войти</button>
+      </div>
+
+      <!-- ERROR / SUCCESS -->
+      <div class="err-msg" id="errMsg"></div>
+      <div class="ok-msg" id="okMsg"></div>
+
+      <!-- OAUTH -->
+      <div class="oauth-row">
+        <button class="oauth-btn" onclick="oauthNotice()">
+          <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </button>
+        <button class="oauth-btn" onclick="oauthNotice()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--text)"><path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0 1 12 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/></svg>
+          GitHub
+        </button>
+      </div>
+
+      <div class="divider">
+        <div class="div-line"></div>
+        <div class="div-txt" id="divTxt">или регистрация через email</div>
+        <div class="div-line"></div>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div id="registerForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="flabel">Имя</label>
+            <div class="fwrap">
+              <input class="finput" id="regFirst" type="text" placeholder="Алекс" oninput="validateName(this)">
+              <span class="ficon" id="regFirstIcon">👤</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="flabel">Фамилия</label>
+            <div class="fwrap">
+              <input class="finput" id="regLast" type="text" placeholder="Иванов">
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flabel">Email</label>
+          <div class="fwrap">
+            <input class="finput" id="regEmail" type="email" placeholder="you@example.com" oninput="validateEmail(this,'regEmailIcon')">
+            <span class="ficon" id="regEmailIcon">✉</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flabel">Пароль</label>
+          <div class="fwrap">
+            <input class="finput" id="regPass" type="password" placeholder="Мин. 8 символов" oninput="checkPassword(this)">
+            <span class="ficon" id="regPassIcon" style="cursor:pointer" onclick="togglePass('regPass')">👁</span>
+          </div>
+          <div class="pw-bars" id="pwBars">
+            <div class="pw-bar" id="pb1"></div>
+            <div class="pw-bar" id="pb2"></div>
+            <div class="pw-bar" id="pb3"></div>
+            <div class="pw-bar" id="pb4"></div>
+          </div>
+          <div class="pw-hint" id="pwHint">Введи пароль</div>
+        </div>
+        <div class="cb-row">
+          <div class="cb" id="cbTerms" onclick="toggleCb('cbTerms')">✓</div>
+          <div class="cb-label">Я согласен с <a href="#">Terms of Service</a> и <a href="#">Privacy Policy</a></div>
+        </div>
+        <button class="btn-submit" id="regBtn" onclick="submitRegister()">
+          <span>▶</span> Создать аккаунт
+        </button>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <div id="loginForm" style="display:none">
+        <div class="form-group">
+          <label class="flabel">Email</label>
+          <div class="fwrap">
+            <input class="finput" id="loginEmail" type="email" placeholder="you@example.com">
+            <span class="ficon">✉</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="flabel">Пароль</label>
+          <div class="fwrap">
+            <input class="finput" id="loginPass" type="password" placeholder="Твой пароль" onkeydown="if(event.key==='Enter')submitLogin()">
+            <span class="ficon" style="cursor:pointer" onclick="togglePass('loginPass')">👁</span>
+          </div>
+        </div>
+        <div style="text-align:right;margin-bottom:18px">
+          <a style="font-size:12px;color:var(--text3);cursor:pointer;font-family:var(--font-code)" href="#">Забыл пароль?</a>
+        </div>
+        <button class="btn-submit" onclick="submitLogin()">
+          <span>→</span> Войти
+        </button>
+      </div>
+
+      <!-- BOTTOM LINK -->
+      <div class="auth-link" id="authLink">
+        Уже есть аккаунт? <a onclick="switchTab('login')">Войти →</a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ASIDE -->
+  <div class="aside">
+    <div class="aside-title">// что тебя ждёт</div>
+    <div class="feat">
+      <div class="feat-icon">🤖</div>
+      <div>
+        <div class="feat-title">AI на базе Gemini</div>
+        <div class="feat-desc">Генерируй страницы и блоки одной командой</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📁</div>
+      <div>
+        <div class="feat-title">Файловый менеджер</div>
+        <div class="feat-desc">Дерево файлов как в VS Code</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">⚡</div>
+      <div>
+        <div class="feat-title">Live Preview</div>
+        <div class="feat-desc">Видишь изменения в реальном времени</div>
+      </div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📦</div>
+      <div>
+        <div class="feat-title">Экспорт в ZIP</div>
+        <div class="feat-desc">Скачивай готовый проект в один клик</div>
+      </div>
+    </div>
+    <div class="term-snip">
+      <div class="term-snip-hdr">
+        <div class="sdot" style="background:#ff5f57"></div>
+        <div class="sdot" style="background:#febc2e"></div>
+        <div class="sdot" style="background:#28c840"></div>
+        <div class="snip-name">devai terminal</div>
+      </div>
+      <div class="term-snip-body">
+        <div><span class="tc">$</span> <span style="color:var(--text)">devai create my-site</span></div>
+        <div><span class="tb">✓</span> Project initialized</div>
+        <div><span class="tb">✓</span> Gemini AI ready</div>
+        <div><span class="tc">✓</span> <span class="tc">Server started :3000</span></div>
+        <div><span class="tc">$</span> <span style="color:var(--text3)">_</span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+let currentTab = 'register';
+let cbChecked = false;
+
+// ==================== SECURITY: SHA-256 via WebCrypto ====================
+async function hashPassword(password) {
+  const msgBuffer = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ==================== SECURITY: Rate limiting for login ====================
+const LOGIN_LIMIT = 5;
+const LOGIN_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+
+function checkLoginRateLimit() {
+  try {
+    const raw = localStorage.getItem('devai_login_attempts');
+    const data = raw ? JSON.parse(raw) : { count: 0, since: Date.now() };
+    const now = Date.now();
+    // Reset window if expired
+    if (now - data.since > LOGIN_WINDOW_MS) {
+      data.count = 0;
+      data.since = now;
+    }
+    if (data.count >= LOGIN_LIMIT) {
+      const wait = Math.ceil((LOGIN_WINDOW_MS - (now - data.since)) / 60000);
+      return { blocked: true, wait };
+    }
+    return { blocked: false, data };
+  } catch {
+    return { blocked: false, data: { count: 0, since: Date.now() } };
+  }
+}
+
+function recordLoginAttempt() {
+  try {
+    const raw = localStorage.getItem('devai_login_attempts');
+    const data = raw ? JSON.parse(raw) : { count: 0, since: Date.now() };
+    data.count = (data.count || 0) + 1;
+    localStorage.setItem('devai_login_attempts', JSON.stringify(data));
+  } catch {}
+}
+
+function resetLoginAttempts() {
+  localStorage.removeItem('devai_login_attempts');
+}
+
+// ==================== SAFE JSON PARSE ====================
+function safeParseJSON(str, fallback) {
+  try { return JSON.parse(str); } catch { return fallback; }
+}
+
+// ==================== UI ====================
+function switchTab(tab) {
+  currentTab = tab;
+  document.getElementById('tabReg').classList.toggle('active', tab === 'register');
+  document.getElementById('tabLogin').classList.toggle('active', tab === 'login');
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('cardTitle').textContent = tab === 'register' ? 'Create account' : 'Welcome back';
+  document.getElementById('cardSub').textContent = tab === 'register' ? 'Начни создавать сайты с AI за 30 секунд' : 'Войди в свой DevAI Studio';
+  document.getElementById('divTxt').textContent = tab === 'register' ? 'или регистрация через email' : 'или войди через email';
+
+  const link = document.getElementById('authLink');
+  link.innerHTML = '';
+  if (tab === 'register') {
+    link.appendChild(document.createTextNode('Уже есть аккаунт? '));
+    const a = document.createElement('a');
+    a.textContent = 'Войти →';
+    a.style.cursor = 'pointer';
+    a.addEventListener('click', () => switchTab('login'));
+    link.appendChild(a);
+  } else {
+    link.appendChild(document.createTextNode('Нет аккаунта? '));
+    const a = document.createElement('a');
+    a.textContent = 'Создать →';
+    a.style.cursor = 'pointer';
+    a.addEventListener('click', () => switchTab('register'));
+    link.appendChild(a);
+  }
+  hideMessages();
+}
+
+function toggleCb(id) {
+  cbChecked = !cbChecked;
+  document.getElementById(id).classList.toggle('checked', cbChecked);
+}
+
+function togglePass(id) {
+  const input = document.getElementById(id);
+  input.type = input.type === 'password' ? 'text' : 'password';
+}
+
+function validateEmail(input, iconId) {
+  const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value);
+  input.className = 'finput ' + (input.value ? (ok ? 'ok' : 'err') : '');
+  if (iconId) {
+    const icon = document.getElementById(iconId);
+    icon.className = 'ficon ' + (ok && input.value ? 'ok' : '');
+    icon.textContent = ok && input.value ? '✓' : '✉';
+  }
+}
+
+function validateName(input) {
+  const ok = input.value.trim().length >= 2;
+  input.className = 'finput ' + (input.value ? (ok ? 'ok' : 'err') : '');
+  document.getElementById('regFirstIcon').className = 'ficon' + (ok ? ' ok' : '');
+  document.getElementById('regFirstIcon').textContent = ok ? '✓' : '👤';
+}
+
+function checkPassword(input) {
+  const v = input.value;
+  const score = [v.length >= 8, /\d/.test(v), /[A-Z]/.test(v), /[!@#$%^&*]/.test(v)].filter(Boolean).length;
+  const bars = ['pb1','pb2','pb3','pb4'];
+  const cls = score <= 1 ? 'w' : score <= 2 ? 'm' : 's';
+  bars.forEach((id, i) => { document.getElementById(id).className = 'pw-bar ' + (i < score ? cls : ''); });
+  const hint = document.getElementById('pwHint');
+  if (!v) { hint.textContent = 'Введи пароль'; hint.className = 'pw-hint'; }
+  else if (score <= 1) { hint.textContent = 'Слабый пароль'; hint.className = 'pw-hint'; }
+  else if (score <= 2) { hint.textContent = 'Средний пароль'; hint.className = 'pw-hint'; }
+  else { hint.textContent = 'Надёжный пароль ✓'; hint.className = 'pw-hint s'; }
+}
+
+function showError(msg) {
+  const el = document.getElementById('errMsg');
+  el.textContent = msg; // textContent — no XSS
+  el.classList.add('show');
+  document.getElementById('okMsg').classList.remove('show');
+}
+
+function showOk(msg) {
+  const el = document.getElementById('okMsg');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('errMsg').classList.remove('show');
+}
+
+function hideMessages() {
+  document.getElementById('errMsg').classList.remove('show');
+  document.getElementById('okMsg').classList.remove('show');
+}
+
+function oauthNotice() {
+  showError('OAuth интеграция будет добавлена в следующем обновлении. Используй email регистрацию.');
+}
+
+// ==================== REGISTER (async — uses WebCrypto) ====================
+async function submitRegister() {
+  const first = document.getElementById('regFirst').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!first || first.length < 2) return showError('Введи своё имя (минимум 2 символа)');
+  if (!email || !emailOk) return showError('Введи корректный email');
+  if (pass.length < 8) return showError('Пароль должен быть минимум 8 символов');
+  if (!cbChecked) return showError('Прими условия использования');
+
+  const users = safeParseJSON(localStorage.getItem('devai_users'), []);
+  if (users.find(u => u.email === email)) return showError('Этот email уже зарегистрирован');
+
+  const btn = document.getElementById('regBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Создаём аккаунт...';
+
+  try {
+    const passHash = await hashPassword(pass);
+    const user = { name: first, email, passHash, created: Date.now() };
+    users.push(user);
+    localStorage.setItem('devai_users', JSON.stringify(users));
+    localStorage.setItem('devai_user', JSON.stringify({ name: first, email }));
+
+    btn.textContent = '✓ Аккаунт создан!';
+    showOk(`Добро пожаловать, ${first}! Переходим в дашборд...`);
+    setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+  } catch (err) {
+    btn.disabled = false;
+    btn.innerHTML = '<span>▶</span> Создать аккаунт';
+    showError('Ошибка при создании аккаунта. Попробуй снова.');
+  }
+}
+
+// ==================== LOGIN (async — uses WebCrypto) ====================
+async function submitLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!email || !emailOk) return showError('Введи корректный email');
+  if (!pass) return showError('Введи пароль');
+
+  // Rate limit check
+  const rateCheck = checkLoginRateLimit();
+  if (rateCheck.blocked) {
+    return showError(`Слишком много попыток. Подожди ${rateCheck.wait} мин.`);
+  }
+
+  const users = safeParseJSON(localStorage.getItem('devai_users'), []);
+  const passHash = await hashPassword(pass);
+  const user = users.find(u => u.email === email && (u.passHash === passHash || u.pass === btoa(pass)));
+
+  if (!user) {
+    recordLoginAttempt();
+    return showError('Неверный email или пароль');
+  }
+
+  // Migrate old btoa passwords to SHA-256 on successful login
+  if (user.pass && !user.passHash) {
+    user.passHash = passHash;
+    delete user.pass;
+    localStorage.setItem('devai_users', JSON.stringify(users));
+  }
+
+  resetLoginAttempts();
+  localStorage.setItem('devai_user', JSON.stringify({ name: user.name, email: user.email }));
+  showOk(`Привет, ${user.name}! Загружаем дашборд...`);
+  setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+}
+
+// Init tab link (avoid inline onclick)
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('tabReg').addEventListener('click', () => switchTab('register'));
+  document.getElementById('tabLogin').addEventListener('click', () => switchTab('login'));
+  // Trigger initial state
+  switchTab('register');
+});
+</script>
+</body>
+</html>
